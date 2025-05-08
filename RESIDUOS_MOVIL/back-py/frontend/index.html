@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detección en Tiempo Real</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    img {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      display: block;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <h1>Detección de Residuos en Tiempo Real</h1>
+  <button id="start-camera">Iniciar Cámara</button>
+  <button id="stop-camera" style="display: none;">Detener Cámara</button>
+  <img id="stream" src="" alt="Streaming de Video" style="display: none;">
+
+  <script>
+    const startButton = document.getElementById('start-camera');
+    const stopButton = document.getElementById('stop-camera');
+    const streamImage = document.getElementById('stream');
+
+    startButton.addEventListener('click', () => {
+      fetch('http://localhost:9000/start-camera', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            streamImage.src = 'http://localhost:9000/stream';
+            streamImage.style.display = 'block';
+            startButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(err => console.error('Error al iniciar la cámara:', err));
+    });
+
+    stopButton.addEventListener('click', () => {
+      fetch('http://localhost:9000/stop-camera', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            streamImage.src = '';
+            streamImage.style.display = 'none';
+            startButton.style.display = 'inline-block';
+            stopButton.style.display = 'none';
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(err => console.error('Error al detener la cámara:', err));
+    });
+  </script>
+</body>
+</html>
